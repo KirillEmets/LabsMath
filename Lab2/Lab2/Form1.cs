@@ -100,8 +100,8 @@ namespace Lab2
                 for (int j = 0; j < n; j++)
                 {
                     T[i, j] = m1[i, j] + m2[i, j];
-                    T[i, j] = (int)Math.Floor(T[i,j]*(1.0 - n3*0.01 - n4*0.01 - 0.3));
-                    //T[i, j] = (int)Math.Floor(T[i,j]*(1.0 - n3*0.01 - n4*0.01 - 0.3) * rand.NextDouble());
+                    //T[i, j] = (int)Math.Floor(T[i,j]*(1.0 - n3*0.01 - n4*0.01 - 0.3));
+                    T[i, j] = (int)Math.Floor(T[i,j]*(1.0 - n3*0.01 - n4*0.01 - 0.3) * rand.NextDouble());
                 }
             }
             return T;
