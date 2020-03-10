@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Lab1
+namespace Lab2
 {
     public partial class Form1 : Form
     {
@@ -36,12 +36,17 @@ namespace Lab1
 
         private void Form1_Load(object sender, EventArgs e) // початок програми
         {
-            nodes = CreateNodes(10 + n3, new Vector2(500, 200), bigRadius); // створення вершин
+            nodes = createNodes(10 + n3, new Vector2(500, 200), bigRadius); // створення вершин
             centerNode = nodes[0];
-            matrix = GenerateMatrix(10 + n3); // створення матриці
+            matrix = generateMatrix(10 + n3); // створення матриці
 
-            WriteMatrix(matrix, tbMatrix); // вивід матриць
-            WriteMatrix(undirectedMatrix(matrix), tbMatrixUnDir);
+            writeMatrix(matrix, tbMatrix); // вивід матриць
+            writeMatrix(undirectedMatrix(matrix), tbMatrixUnDir);
+
+            calculatePowerOfMatrix(matrix, nodes);
+            writePowers(nodes);
+
+            writeIsolatedAndFinal(nodes);
 
             Invalidate(); // відрисовка графу
         }
@@ -62,10 +67,10 @@ namespace Lab1
                 n.Draw(penNode, g); // відрисовка вершин
             }
 
-            DrawGraph(matrix, nodes, penLines, g, withArrows); // відрисовка ліній і стрілок
+            drawGraph(matrix, nodes, penLines, g, withArrows); // відрисовка ліній і стрілок
         }
 
-        List<Node> CreateNodes(int count, Vector2 circleCenter, int circleRadius)
+        List<Node> createNodes(int count, Vector2 circleCenter, int circleRadius)
         {
             // коло з вершиною в центрі
 
@@ -82,7 +87,7 @@ namespace Lab1
             return nodes;
         }
 
-        int[,] GenerateMatrix(int n)
+        int[,] generateMatrix(int n)
         {
             Random rand = new Random(n1 * 1000 + n2 * 100 + n3 * 10 + n4);
 
@@ -95,7 +100,8 @@ namespace Lab1
                 for (int j = 0; j < n; j++)
                 {
                     T[i, j] = m1[i, j] + m2[i, j];
-                    T[i, j] = (int)Math.Floor(T[i,j]*(1.0 - n3*0.02 - n4*0.005 - 0.25));
+                    T[i, j] = (int)Math.Floor(T[i,j]*(1.0 - n3*0.01 - n4*0.01 - 0.3));
+                    //T[i, j] = (int)Math.Floor(T[i,j]*(1.0 - n3*0.01 - n4*0.01 - 0.3) * rand.NextDouble());
                 }
             }
             return T;
@@ -129,7 +135,7 @@ namespace Lab1
             return res;
         }
 
-        void WriteMatrix(int[,] m, TextBox tb)
+        void writeMatrix(int[,] m, TextBox tb)
         {
             tb.Text = "";
             string s = "";
@@ -146,7 +152,20 @@ namespace Lab1
             tb.Text = tb.Text.Remove(tb.Text.LastIndexOf("\r\n"));
         }
 
-        void DrawGraph(int[,] matrix, List<Node> nodes, Pen pen, Graphics g, bool withArrows)
+        void writePowers(List<Node> nodes)
+        {
+            var p = dataGridViewPows;
+            string[] row;
+            foreach (var n in nodes)
+            {
+
+                row = new string[] { (n.index + 1) + "", n.power + "", n.hpowIn + "", n.hpowOut + "" };
+                p.Rows.Add(row);
+            }
+
+        }
+
+        void drawGraph(int[,] matrix, List<Node> nodes, Pen pen, Graphics g, bool withArrows)
         {
             for (int i = 0; i < matrix.GetLength(0); i++)
             {
@@ -154,16 +173,20 @@ namespace Lab1
                 {
                     if(matrix[i, j] == 1)
                     {
+                        
+
                         if (i == j)
                         {
                             nodes[i].DrawCircle(centerNode.center, pen, g, withArrows);
                         }
-
+                        
                         else
                         {
                             bool isSecond = matrix[j, i] == 1 && i > j && withArrows;
                             Vector2 cp = null;
                             Node obstacle = null;
+
+
                             foreach (var n in nodes)
                             {
                                 cp = n.isBetween(nodes[i], nodes[j]);
@@ -174,9 +197,11 @@ namespace Lab1
                                 }
                             }
 
+                            
+
                             if (cp != null)
                             {
-                                float scale = isSecond ? 1.7f : 1.3f;
+                                float scale = isSecond ? 1.7f : 1.4f;
                                 Vector2 op = obstacle.GetOffsetPointOnCircle(cp, scale);
                                 nodes[i].DrawArcTo(nodes[j], op, pen, g, withArrows);
                             }
@@ -195,6 +220,38 @@ namespace Lab1
                     }
                 }
             }
+        }
+
+        void calculatePowerOfMatrix(int[,] matrix, List<Node> nodes)
+        {
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, j] == 1)
+                    {
+                        nodes[i].hpowOut += 1;
+                        nodes[j].hpowIn += 1;
+
+                        nodes[i].power += 1;
+                        nodes[j].power += 1;
+                        if (matrix[j, i] == 1 && i > j) nodes[i].power -= 1;
+                        if (matrix[j, i] == 1 && i > j) nodes[j].power -= 1;
+                    }
+                }
+            }
+        }
+
+        void writeIsolatedAndFinal(List<Node> nodes)
+        {
+            string isolated = "";
+            string final = "";
+
+            nodes.FindAll(x => x.power == 0).ForEach(x => isolated += x.index + 1 + ", ");
+            nodes.FindAll(x => x.power == 1).ForEach(x => final += x.index + 1 + ", ");
+            
+            if(isolated != "") tbIsolated.Text = isolated.Remove(isolated.Length - 2);
+            if (final != "") tbFinal.Text = final.Remove(final.Length - 2);
         }
 
         Vector2 findFreePointBetween(Vector2 p1, Vector2 p2)
@@ -243,6 +300,45 @@ namespace Lab1
             scaleOffset.y = -(vScrollBar1.Value - 50) * 10;
             Invalidate();
         }
+
+        private int lastorder = 1;
+        private int lastindex = -1;
+        private void dataGridViewPows_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            var i = e.ColumnIndex;
+            if (i != lastindex)
+            {
+                lastorder = 1;
+                lastindex = i;
+            }
+            lastorder *= -1;
+
+            dataGridViewPows.Sort(new RowComparer(lastorder, i));
+        }
+    }
+
+    class RowComparer : System.Collections.IComparer
+    {
+        private static int sortOrderModifier = 1;
+        private static int index = 0;
+
+        public RowComparer(int sortOrder, int Rowindex)
+        {
+            index = Rowindex;
+            sortOrderModifier = sortOrder;
+        }
+
+        public int Compare(object x, object y)
+        {
+            DataGridViewRow DataGridViewRow1 = (DataGridViewRow)x;
+            DataGridViewRow DataGridViewRow2 = (DataGridViewRow)y;
+
+            int CompareResult = 
+                int.Parse(DataGridViewRow1.Cells[index].Value.ToString()) - 
+                int.Parse(DataGridViewRow2.Cells[index].Value.ToString());
+            
+            return CompareResult * sortOrderModifier;
+        }
     }
 
     public class Node
@@ -252,11 +348,14 @@ namespace Lab1
         public int index;
         public Rectangle rect;
         public Vector2 center
-        {
-            
+        {            
             get { return position + new Vector2(rect.Width, rect.Height) / 2; }
         }
-        
+
+        public int hpowIn = 0;
+        public int hpowOut = 0;
+        public int power = 0;
+       
 
         public Node(float x, float y, int radius, int n)
         {        
@@ -292,8 +391,8 @@ namespace Lab1
                 dir = (p3 - p4).normalized;
                 const int h = 10;
                 Point t1 = p4.point;
-                Point t2 = (Vector2.FromPoint(t1) + dir * h + dir.turnOn((float)(1.57f)) * h / 3).point;
-                Point t3 = (Vector2.FromPoint(t1) + dir * h - dir.turnOn((float)(1.57f)) * h / 3).point;
+                Point t2 = (Vector2.FromPoint(t1) + dir * h + dir.turnOn((1.57f)) * h / 3).point;
+                Point t3 = (Vector2.FromPoint(t1) + dir * h - dir.turnOn((1.57f)) * h / 3).point;
 
                 g.FillPolygon(Brushes.Black, new Point[] { t1, t2, t3 });
             }
@@ -310,8 +409,8 @@ namespace Lab1
                 Vector2 dir = (center - node.center).normalized;
                 const int h = 10;
                 Point t1 = p2;
-                Point t2 = (Vector2.FromPoint(t1) + dir * h + dir.turnOn((float)(1.57f)) * h / 3).point;
-                Point t3 = (Vector2.FromPoint(t1) + dir * h - dir.turnOn((float)(1.57f)) * h / 3).point;
+                Point t2 = (Vector2.FromPoint(t1) + dir * h + dir.turnOn((1.57f)) * h / 3).point;
+                Point t3 = (Vector2.FromPoint(t1) + dir * h - dir.turnOn((1.57f)) * h / 3).point;
 
                 g.FillPolygon(Brushes.Black, new Point[] {t1, t2, t3});
             }
@@ -329,8 +428,8 @@ namespace Lab1
                 Vector2 dir = (op - node.center).normalized;
                 const int h = 10;
                 Point t1 = p2;
-                Point t2 = (Vector2.FromPoint(t1) + dir * h + dir.turnOn((float)(1.57f)) * h / 3).point;
-                Point t3 = (Vector2.FromPoint(t1) + dir * h - dir.turnOn((float)(1.57f)) * h / 3).point;
+                Point t2 = (Vector2.FromPoint(t1) + dir * h + dir.turnOn((1.57f)) * h / 3).point;
+                Point t3 = (Vector2.FromPoint(t1) + dir * h - dir.turnOn((1.57f)) * h / 3).point;
 
                 g.FillPolygon(Brushes.Black, new Point[] { t1, t2, t3 });
             }
@@ -339,8 +438,15 @@ namespace Lab1
         public Vector2 isBetween(Node n1, Node n2)
         {
             Vector2 cp = (n2.center + n1.center) / 2;
-            if((cp - center).length < radius)
+            if ((cp - center).length < radius)
+            {
+                if ((cp - center).length < 2)
+                {
+                    cp = center + (n2.center - n1.center).normalized.turnOn((1.57f)) * 2;
+                }           
+
                 return cp;
+            }
 
             return null;
         }
@@ -348,7 +454,7 @@ namespace Lab1
         public Vector2 GetOffsetPointOnCircle(Vector2 point, float scale)
         {
             if (ContainsPoint(point))
-            {
+            {             
                 Vector2 dir = (point - center).normalized;
                 Vector2 op = center + dir * (radius * scale);
                 return op;
