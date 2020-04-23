@@ -47,6 +47,7 @@
             this.tbIsolated = new System.Windows.Forms.TextBox();
             this.tbFinal = new System.Windows.Forms.TextBox();
             this.lblFinal = new System.Windows.Forms.Label();
+            this.lblRegular = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.trackScale)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPows)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nodeBindingSource)).BeginInit();
@@ -217,11 +218,21 @@
             this.lblFinal.TabIndex = 11;
             this.lblFinal.Text = "Висячі";
             // 
+            // lblRegular
+            // 
+            this.lblRegular.AutoSize = true;
+            this.lblRegular.Location = new System.Drawing.Point(803, 421);
+            this.lblRegular.Name = "lblRegular";
+            this.lblRegular.Size = new System.Drawing.Size(109, 13);
+            this.lblRegular.TabIndex = 13;
+            this.lblRegular.Text = "Граф не регулярний";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1081, 513);
+            this.Controls.Add(this.lblRegular);
             this.Controls.Add(this.tbFinal);
             this.Controls.Add(this.lblFinal);
             this.Controls.Add(this.tbIsolated);
@@ -267,6 +278,7 @@
         private System.Windows.Forms.TextBox tbIsolated;
         private System.Windows.Forms.TextBox tbFinal;
         private System.Windows.Forms.Label lblFinal;
+        private System.Windows.Forms.Label lblRegular;
     }
 }
 

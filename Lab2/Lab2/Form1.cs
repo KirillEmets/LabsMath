@@ -47,6 +47,7 @@ namespace Lab2
             writePowers(nodes);
 
             writeIsolatedAndFinal(nodes);
+            isRegular(nodes);
 
             Invalidate(); // відрисовка графу
         }
@@ -101,6 +102,7 @@ namespace Lab2
                 {
                     T[i, j] = m1[i, j] + m2[i, j];
                     //T[i, j] = (int)Math.Floor(T[i,j]*(1.0 - n3*0.01 - n4*0.01 - 0.3));
+                    //T[i, j] = 1;    
                     T[i, j] = (int)Math.Floor(T[i,j]*(1.0 - n3*0.01 - n4*0.01 - 0.3) * rand.NextDouble());
                 }
             }
@@ -173,8 +175,7 @@ namespace Lab2
                 {
                     if(matrix[i, j] == 1)
                     {
-                        
-
+                     
                         if (i == j)
                         {
                             nodes[i].DrawCircle(centerNode.center, pen, g, withArrows);
@@ -240,6 +241,21 @@ namespace Lab2
                     }
                 }
             }
+        }
+
+        void isRegular(List<Node> nodes)
+        {
+            int k = nodes[0].power;
+            foreach (var n in nodes)
+            {
+                if(n.power != k)
+                {
+                    lblRegular.Text = "Граф не однорідний";
+                    return;
+                }
+            }
+            lblRegular.Text = "Граф однорідний";
+
         }
 
         void writeIsolatedAndFinal(List<Node> nodes)
