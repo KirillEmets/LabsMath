@@ -1,0 +1,10 @@
+C:\Users\kiril\source\repos\DMLabs\Lab5\Lab5\bin\Debug\Lab5.exe.config
+C:\Users\kiril\source\repos\DMLabs\Lab5\Lab5\bin\Debug\Lab5.exe
+C:\Users\kiril\source\repos\DMLabs\Lab5\Lab5\bin\Debug\Lab5.pdb
+C:\Users\kiril\source\repos\DMLabs\Lab5\Lab5\obj\Debug\Lab5.csprojAssemblyReference.cache
+C:\Users\kiril\source\repos\DMLabs\Lab5\Lab5\obj\Debug\Lab5.Properties.Resources.resources
+C:\Users\kiril\source\repos\DMLabs\Lab5\Lab5\obj\Debug\Lab5.csproj.GenerateResource.cache
+C:\Users\kiril\source\repos\DMLabs\Lab5\Lab5\obj\Debug\Lab5.csproj.CoreCompileInputs.cache
+C:\Users\kiril\source\repos\DMLabs\Lab5\Lab5\obj\Debug\Lab5.exe
+C:\Users\kiril\source\repos\DMLabs\Lab5\Lab5\obj\Debug\Lab5.pdb
+C:\Users\kiril\source\repos\DMLabs\Lab5\Lab5\obj\Debug\Lab5.Form1.resources
